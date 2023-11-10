@@ -1,12 +1,14 @@
 # wanibotty
 [] install encryption
+
 [] connect db
--[] create add, remove, and update methods
 
--[] create html page for ssts
+[] create add, remove, and update methods
 
--[] plan how to show data
+[] create html page for ssts
 
--[] setup puppeteer to input data to static site 
+[] plan how to show data
 
--[] will only work if im online, since i dont wanna host on heroku
+[] setup puppeteer to input data to static site 
+
+[] will only work if im online, since i dont wanna host on heroku
