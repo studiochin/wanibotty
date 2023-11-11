@@ -4,6 +4,7 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 const mongoose = require('mongoose');
+const mongoDBUrl = process.env.MONGODBURL;
 
 const client = new Client({
     intents: [
@@ -36,11 +37,30 @@ for (const folder of commandFolders) {
 	}
 }
 
-client.on('ready', () => {
-    console.log('ready for commands!');
+client.on('ready', async () => {
+
+	if (!mongoDBUrl) {
+		return;
+	}
+	await mongoose.connect(mongoDBUrl || '', {
+		serverSelectionTimeoutMS: 15000
+	});
+
+	if (mongoose.connect) {
+		console.log("DATABASE CONNECTED");
+	}
+
+	console.log('ready for commands!');
+
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
+
+	if (!mongoose.connect) {
+		console.error("db not up");
+		return;		
+	}
+
     if (!interaction.isCommand()) {
 		console.error(`No command matching ${interaction.commandName} was found.`);
         return;
@@ -57,6 +77,23 @@ client.on(Events.InteractionCreate, async (interaction) => {
 			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 		}
 	}
-})
+});
+
+client.on(Events.MessageCreate, async (interaction) => {
+	const name = interaction.author.globalName;
+
+	if (interaction.content.indexOf('やばい') >= 0 ) {
+		await interaction.reply(`no, ${name} you're meccha yabbai`);
+	}
+
+	if (interaction.content.indexOf('めっちゃ') >= 0 ) {
+		await interaction.reply(`${name} can meccha deez nuts 🥜`);
+	}
+
+	if (interaction.content.indexOf('くそ野郎') >= 0) {
+		await interaction.reply(`${name} can eat my shiitake. どうぞう`);
+	}
+
+});
 
 client.login(process.env.TOKEN);

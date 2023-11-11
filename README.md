@@ -1,9 +1,11 @@
 # wanibotty
-[] install encryption
+[x] install encryption
 
-[] connect db
+[x] connect db
 
-[] create add, remove, and update methods
+[x] create add, remove
+
+[] and update methods
 
 [] create html page for ssts
 

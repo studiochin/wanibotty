@@ -6,6 +6,7 @@ module.exports = {
 		console.log("go to github hosted static site, fill in data, screenshot, then send to chat");
 
         console.log("go to github hosted static site, fill in data, screenshot, then send to chat");
+
 		await interaction.reply(`here u are`);
 	},
 };
