@@ -11,6 +11,10 @@ const userDataSchema = new Schema(
     maxLevel: { type: Number, require: true },
     lastUpdatedAt: { type: Date, require: true },
     totalReviewsDone: { type: Number, require: false },
+    startedLevelAt: {type: Date, require: false},
+    unlockedLevelAt:{type: Date, require: false},
+    passedLevelAt: {type: Date, require: false},
+    
   },
   { timestamps: true }
 );

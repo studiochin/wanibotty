@@ -11,7 +11,7 @@ require("dotenv").config();
 const fs = require("node:fs");
 const path = require("node:path");
 const mongoose = require("mongoose");
-const { onMessageCreate } = require("messageCreate.js");
+const { onMessageCreate } = require("./messageCreate.js");
 const mongoDBUrl = process.env.MONGODBURL;
 
 const client = new Client({
