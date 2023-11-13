@@ -41,14 +41,19 @@ exports.botErrorReplies = (error) => {
   return errorReplies[error];
 };
 
+const getRequestHeaders = (userToken) => {
+  return {
+    Authorization: `Bearer ${userToken}`,
+    "Wanikani-Revision": "20170710",    
+  }
+}
+
 exports.fetchReviewStats = async (userToken) => {
+  const reqHeaders = getRequestHeaders(userToken);
   const requestAuth = await request(
     "https://api.wanikani.com/v2/level_progressions",
     {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-        "Wanikani-Revision": "20170710",
-      },
+      headers: reqHeaders
     }
   );
   const results = await requestAuth.body.json();
@@ -62,24 +67,69 @@ exports.fetchUserData = async (userId) => {
   return userData;
 };
 
-exports.convertDate = (dateString) => {
+exports.fetchSummaryReport = async (userToken) => {
+  const reqHeaders = getRequestHeaders(userToken);
+  const requestAuth = await request(
+    "https://api.wanikani.com/v2/summary",
+    {
+      headers: reqHeaders
+    }
+  );
+  const results = await requestAuth.body.json();
+  console.log(results.data);
+  return results.data;
+}
 
+const formatLongDate = (dateString) => {
   const date = new Date(dateString);
 
-  // Extract date and time information
   let year = date.getFullYear();
   let month = date.getMonth() + 1; // Months are 0-indexed
   let day = date.getDate();
 
   let hours = date.getHours();
   let minutes = date.getMinutes();
-  let seconds = date.getSeconds();
+  let ampm = hours >= 12 ? 'PM' : 'AM';
 
-  // Format the date and time (optional)
-  let formattedDate = year + '-' + month.toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
-  let formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+  hours = hours % 12;
+  hours = hours ? hours : 12;
 
+  let formattedDate = `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+  let formattedTime = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+ 
   return `${formattedDate} ${formattedTime}`;
+}
+
+const formatCountdown = (dateString) => {
+  let now = new Date();
+  let targetDate = new Date(dateString);
+  let difference = targetDate - now;
+
+  let days = Math.floor(difference / (1000 * 60 * 60 * 24));
+  let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+  return `Time until next review: ${Math.abs(days)}d ${Math.abs(hours)}hr ${Math.abs(minutes)}m`;
+
+}
+
+exports.getCountdownToNextUpdate = (date) => {
+  const targetDate = new Date(dateString);
+  const now = new Date();
+
+  const difference = targetDate - now;
+  return difference;
+}
+
+exports.convertDate = (option, dateString) => {
+  if (option == "long") {
+    return formatLongDate(dateString);
+    
+  }
+
+  if (option == "countdown") {
+    return formatCountdown(dateString);
+  }
+
 }
 
 exports.isPastMinimumUpdateTime = async (lastUpdatedTime) => {};

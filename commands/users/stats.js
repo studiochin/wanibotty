@@ -10,8 +10,11 @@ const {
 // };
 
 const statsOutputFromDb = (userData) => {
-  return `here u are => level: ${userData.level} \nstarted level at: ${convertDate(userData.startedLevelAt)
-  }\nunlocked level at: ${ convertDate(userData.unlockedLevelAt)}`;
+  return `
+  level: ${userData.level}
+  started level at: ${convertDate("long", userData.startedLevelAt)}
+  unlocked level at: ${convertDate("long", userData.unlockedLevelAt)}
+  ${convertDate("countdown", userData.nextReviewsAt)}`;
 };
 
 module.exports = {
@@ -25,7 +28,6 @@ module.exports = {
       await interaction.reply(botErrorReplies("userNotFound"));
       return;
     }
-    console.log(userData);
     await interaction.reply(statsOutputFromDb(userData));
   },
 };

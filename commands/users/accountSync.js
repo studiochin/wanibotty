@@ -5,6 +5,7 @@ const {
   fetchUserData,
   isPastMinimumUpdateTime,
   botErrorReplies,
+  fetchSummaryReport
 } = require("../../src/utils.js");
 
 module.exports = {
@@ -32,10 +33,11 @@ module.exports = {
 
 
     const statsResult = await fetchReviewStats(token);
-    console.log(statsResult);
+    const reports = await fetchSummaryReport(token);
     userData.startedLevelAt = statsResult.data.started_at;
     userData.unlockedLevelAt = statsResult.data.unlocked_at;
     userData.passedLevelAt = statsResult.data.passed_at;
+    userData.nextReviewsAt = reports.next_reviews_at;
 
     await userData.save();
     await interaction.reply(`sync complete`);

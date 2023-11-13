@@ -14,6 +14,7 @@ const userDataSchema = new Schema(
     startedLevelAt: {type: Date, require: false},
     unlockedLevelAt:{type: Date, require: false},
     passedLevelAt: {type: Date, require: false},
+    nextReviewsAt: {type: Date, require: false}
     
   },
   { timestamps: true }
