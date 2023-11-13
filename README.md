@@ -6,9 +6,9 @@
 
 [x] create add, remove
 
-[] get stats method
+[x] get stats method
 
-[] account sync method
+[x] account sync method
 
 [] create html page for ssts
 

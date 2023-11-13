@@ -4,6 +4,7 @@ const {
   fetchReviewStats,
   fetchUserData,
   isPastMinimumUpdateTime,
+  botErrorReplies,
 } = require("../../src/utils.js");
 
 const statsOutput = (data) => {
@@ -19,25 +20,13 @@ module.exports = {
     .setName("mystats")
     .setDescription("get general stats"),
   async execute(interaction) {
-    // if stats
-    const userData = fetchUserData();
-    if (!isPastMinimumUpdateTime(userData.lastUpdatedAt)) {
-      // just get from db
-      await interaction.reply(statsOutputFromDb(userData));
+    const userData = fetchUserData(interaction.user.id);
+
+    if (!userData) {
+      await interaction.reply(botErrorReplies("userNotFound"));
       return;
     }
 
-    const token = decrypt({
-      encryptedData: userData.token,
-      iv: userData.iv,
-    });
-
-    const statsResult = await fetchReviewStats(token);
-
-    // auto sync
-    await userData.udpateOne({ totalReviewsDone: statsResult.total_count });
-
-    //
-    await interaction.reply(statsOutput(statsResult));
+    await interaction.reply(statsOutputFromDb(userData));
   },
 };

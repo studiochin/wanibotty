@@ -1,16 +1,37 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
+const { SlashCommandBuilder } = require("@discordjs/builders");
+const {
+  decrypt,
+  fetchReviewStats,
+  fetchUserData,
+  isPastMinimumUpdateTime,
+  botErrorReplies,
+} = require("../../src/utils.js");
 
 module.exports = {
-    data: new SlashCommandBuilder()
-    .setName('sync')
-    .setDescription('update to latest profile data'),
-    execute: async (interaction) => {
+  data: new SlashCommandBuilder()
+    .setName("sync")
+    .setDescription("update to latest profile data"),
+  execute: async (interaction) => {
+    const userData = fetchUserData();
 
-    console.log("if < 30 mins ago dont update. can sync after x minutes");
+    if (!userData) {
+      await interaction.reply(botErrorReplies("userNotFound"));
+      return;
+    }
 
-    console.log("if > 30mins, go to db, decrypt, then pull latest from wanikani");
+    if (!isPastMinimumUpdateTime(userData)) {
+      await interaction.reply(botErrorReplies("minimumUpdateTine"));
+      return;
+    }
 
-    console.log("update fields in mongoose data");
-        await interaction.reply(`all synced up. run /stats for a summary :)`);
-    },
+    // use this logic for syning
+    const token = decrypt({
+      encryptedData: userData.token,
+      iv: userData.iv,
+    });
+
+    const statsResult = await fetchReviewStats(token);
+    await userData.udpateOne({ totalReviewsDone: statsResult.total_count });
+    await interaction.reply(`sync complete`);
+  },
 };

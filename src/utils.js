@@ -29,6 +29,14 @@ exports.decrypt = (encryptedObj) => {
   return decrypted.toString();
 };
 
+exports.botErrorReplies = (error) => {
+  const errorReplies = {
+    minimumUpdateTime: `pls wait 30 mins from last update`,
+    userNotFound: `pls register first :) use command /register <api-token-from-wani-kani>`,
+  };
+  return errorReplies[error];
+};
+
 exports.fetchReviewStats = async (userToken) => {
   const requestAuth = await request(
     "https://api.wanikani.com/v2/review_statistics",
@@ -43,18 +51,10 @@ exports.fetchReviewStats = async (userToken) => {
   return results.data;
 };
 
-exports.fetchUserData = async () => {
+exports.fetchUserData = async (userId) => {
   const userData = await userDataSchema
     .findOne({ userId: interaction.user.id })
     .exec();
-
-  if (!userData) {
-    await interaction.reply(
-      `pls register first :) use command /register <api-token-from-wani-kani>`
-    );
-    return;
-  }
-
   return userData;
 };
 
