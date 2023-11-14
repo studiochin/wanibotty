@@ -3,15 +3,14 @@ const {
   IntentsBitField,
   Events,
   Collection,
-  REST,
-  Routes,
+  MessageType,
 } = require("discord.js");
 require("dotenv").config();
-
 const fs = require("node:fs");
 const path = require("node:path");
 const mongoose = require("mongoose");
 const { onMessageCreate } = require("./messageCreate.js");
+const { OpenAI } = require("openai");
 const mongoDBUrl = process.env.MONGODBURL;
 
 const client = new Client({
@@ -22,6 +21,9 @@ const client = new Client({
     IntentsBitField.Flags.MessageContent,
   ],
 });
+
+
+const openai = new OpenAI({apiKey: process.env.OPENAI, organization: process.env.ORG});
 
 client.commands = new Collection();
 
@@ -39,7 +41,6 @@ for (const folder of commandFolders) {
     const filePath = path.join(commandsPath, file);
     const command = require(filePath);
     if ("data" in command && "execute" in command) {
-      console.log("the comands goin in", command);
       client.commands.set(command.data.name, command);
     } else {
       console.log(
@@ -60,6 +61,8 @@ client.on("ready", async () => {
   if (mongoose.connect) {
     console.log("DATABASE CONNECTED");
   }
+
+
 });
 
 // when user uses one fo the commands
@@ -96,6 +99,17 @@ client.on(Events.InteractionCreate, async (interaction) => {
 // when user sends something
 client.on(Events.MessageCreate, async (interaction) => {
   onMessageCreate(interaction);
+
+  if (interaction.type == MessageType.Reply && interaction.content == "translatekanji") {
+    const reference = await interaction.fetchReference();
+    const completion = await openai.chat.completions.create({
+      messages: [{"role": "user", "content": `translate all the kanji into hirigana and rewrite the sentence back to me: ${reference.content}`}
+      ],
+      model: "gpt-3.5-turbo",
+    });
+    await interaction.reply(`${completion.choices[0].message.content}`);
+  
+  }
 });
 
 client.login(process.env.TOKEN);
