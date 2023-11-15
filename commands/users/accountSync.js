@@ -5,7 +5,8 @@ const {
   fetchUserData,
   isPastMinimumUpdateTime,
   botErrorReplies,
-  fetchSummaryReport
+  fetchSummaryReport,
+  fetchAssignments
 } = require("../../src/utils.js");
 
 module.exports = {
@@ -34,10 +35,20 @@ module.exports = {
 
     const statsResult = await fetchReviewStats(token);
     const reports = await fetchSummaryReport(token);
+    const assignments = await fetchAssignments(token);
+
+    userData.level = statsResult.data.level;
     userData.startedLevelAt = statsResult.data.started_at;
     userData.unlockedLevelAt = statsResult.data.unlocked_at;
     userData.passedLevelAt = statsResult.data.passed_at;
     userData.nextReviewsAt = reports.next_reviews_at;
+
+    userData.totalAssignments = assignments.totalAssignments;
+    userData.apprenticeCount = assignments.apprenticeCount;
+    userData.guruCount = assignments.guruCount;
+    userData.masterCount = assignments.masterCount;
+    userData.englightenedCount = assignments.englightenedCount;
+    userData.burnedCount = assignments.burnedCount;
 
     await userData.save();
     await interaction.reply(`sync complete`);

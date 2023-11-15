@@ -14,7 +14,13 @@ const statsOutputFromDb = (userData) => {
   level: ${userData.level}
   started level at: ${convertDate("long", userData.startedLevelAt)}
   unlocked level at: ${convertDate("long", userData.unlockedLevelAt)}
-  ${convertDate("countdown", userData.nextReviewsAt)}`;
+  ${convertDate("countdown", userData.nextReviewsAt)}
+  total kanji studying: ${userData.totalAssignments}
+  apprentice: ${userData.apprenticeCount}
+  guru: ${userData.guruCount}
+  mastered: ${userData.masterCount}
+  enlightened: ${userData.enlightenedCount}
+  `;
 };
 
 module.exports = {

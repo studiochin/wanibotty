@@ -100,12 +100,33 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on(Events.MessageCreate, async (interaction) => {
   onMessageCreate(interaction);
 
+  if (interaction.type == MessageType.Reply && interaction.content == "replyinjapanese") {
+    const reference = await interaction.fetchReference();
+    const completion = await openai.chat.completions.create({
+      messages: [{"role": "user", "content": `reply to this sentence in japanese with hirigana next to kanji: ${reference.content}`}
+      ],
+      model: "gpt-3.5-turbo",
+    });
+    await interaction.reply(`${completion.choices[0].message.content}`); 
+   }
+
+  if (interaction.content == "catchthesegrammatichands") {
+    const completion = await openai.chat.completions.create({
+      messages: [{"role": "user", "content": `give us a random grammar topic from the N4 or N5 category for the JLPT and teach it some important topics about it. keep it to 3 short bullet points`}
+      ],
+      model: "gpt-3.5-turbo",
+      max_tokens: 2000
+    });
+    await interaction.reply(`${completion.choices[0].message.content}`);
+  }
+
   if (interaction.type == MessageType.Reply && interaction.content == "translatekanji") {
     const reference = await interaction.fetchReference();
     const completion = await openai.chat.completions.create({
       messages: [{"role": "user", "content": `translate all the kanji into hirigana and rewrite the sentence back to me: ${reference.content}`}
       ],
       model: "gpt-3.5-turbo",
+      max_tokens: 200
     });
     await interaction.reply(`${completion.choices[0].message.content}`);
   

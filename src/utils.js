@@ -48,6 +48,51 @@ const getRequestHeaders = (userToken) => {
   }
 }
 
+exports.fetchAssignments = async (userToken) => {
+  const reqHeaders = getRequestHeaders(userToken);
+  const requestAuth = await request(
+    "https://api.wanikani.com/v2/assignments",
+    {
+      headers: reqHeaders
+    }
+  );
+  const results = await requestAuth.body.json();
+
+  let resultsToReturn = {
+    totalAssignments: 0,
+    apprenticeCount: 0,
+    guruCount: 0,
+    masterCount: 0,
+    englightenedCount: 0,
+    brunedCount: 0
+  }
+
+  resultsToReturn.totalAssignments = results.total_count;
+
+  results.data.forEach((assignment) => {
+    let data = assignment.data;
+    if (data.srs_stage > 0 && data.srs_stage <= 4) {
+        resultsToReturn.apprenticeCount++;
+      
+    }
+    if (data.srs_stage > 4 && data.srs_stage <= 6) {
+      resultsToReturn.guruCount++;
+
+    }
+    if (data.srs_stage == 7 ) {
+      resultsToReturn.masterCount++;
+    }
+
+    if (data.srs_stage == 8 ) {
+      resultsToReturn.englightenedCount++;
+
+    }
+
+  });
+  console.log(resultsToReturn);
+  return resultsToReturn;
+}
+
 exports.fetchReviewStats = async (userToken) => {
   const reqHeaders = getRequestHeaders(userToken);
   const requestAuth = await request(
@@ -76,7 +121,6 @@ exports.fetchSummaryReport = async (userToken) => {
     }
   );
   const results = await requestAuth.body.json();
-  console.log(results.data);
   return results.data;
 }
 
