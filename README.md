@@ -10,6 +10,8 @@
 
 [x] account sync method
 
+[] deploy to heroku
+
 [] create html page for ssts
 
 [] plan how to show data
