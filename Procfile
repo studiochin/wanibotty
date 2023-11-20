@@ -1,1 +1,1 @@
-web: nodemon
+worker: npm start
