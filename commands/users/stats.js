@@ -11,9 +11,8 @@ const {
 
 const statsOutputFromDb = (userData) => {
   return `
+  
   level: ${userData.level}
-  started level at: ${convertDate("long", userData.startedLevelAt)}
-  unlocked level at: ${convertDate("long", userData.unlockedLevelAt)}
   ${convertDate("countdown", userData.nextReviewsAt)}
   total kanji studying: ${userData.totalAssignments}
   apprentice: ${userData.apprenticeCount}
