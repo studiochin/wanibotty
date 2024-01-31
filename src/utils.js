@@ -5,8 +5,7 @@ require("dotenv").config();
 const ENCRYPTION_KEY = process.env.ENCRYPTIONKEY;
 const IV = crypto.randomBytes(Number(process.env.IVLENGTH));
 
-const { request } = require('undici');
-
+const { request } = require("undici");
 
 exports.encrypt = (text) => {
   const cipher = crypto.createCipheriv(
@@ -44,18 +43,15 @@ exports.botErrorReplies = (error) => {
 const getRequestHeaders = (userToken) => {
   return {
     Authorization: `Bearer ${userToken}`,
-    "Wanikani-Revision": "20170710",    
-  }
-}
+    "Wanikani-Revision": "20170710",
+  };
+};
 
 exports.fetchAssignments = async (userToken) => {
   const reqHeaders = getRequestHeaders(userToken);
-  const requestAuth = await request(
-    "https://api.wanikani.com/v2/assignments",
-    {
-      headers: reqHeaders
-    }
-  );
+  const requestAuth = await request("https://api.wanikani.com/v2/assignments", {
+    headers: reqHeaders,
+  });
   const results = await requestAuth.body.json();
 
   let resultsToReturn = {
@@ -64,41 +60,37 @@ exports.fetchAssignments = async (userToken) => {
     guruCount: 0,
     masterCount: 0,
     englightenedCount: 0,
-    brunedCount: 0
-  }
+    brunedCount: 0,
+  };
 
   resultsToReturn.totalAssignments = results.total_count;
 
   results.data.forEach((assignment) => {
     let data = assignment.data;
     if (data.srs_stage > 0 && data.srs_stage <= 4) {
-        resultsToReturn.apprenticeCount++;
-      
+      resultsToReturn.apprenticeCount++;
     }
     if (data.srs_stage > 4 && data.srs_stage <= 6) {
       resultsToReturn.guruCount++;
-
     }
-    if (data.srs_stage == 7 ) {
+    if (data.srs_stage >= 7) {
       resultsToReturn.masterCount++;
     }
 
-    if (data.srs_stage == 8 ) {
+    if (data.srs_stage >= 8) {
       resultsToReturn.englightenedCount++;
-
     }
-
   });
   console.log(resultsToReturn);
   return resultsToReturn;
-}
+};
 
 exports.fetchReviewStats = async (userToken) => {
   const reqHeaders = getRequestHeaders(userToken);
   const requestAuth = await request(
     "https://api.wanikani.com/v2/level_progressions",
     {
-      headers: reqHeaders
+      headers: reqHeaders,
     }
   );
   const results = await requestAuth.body.json();
@@ -106,23 +98,18 @@ exports.fetchReviewStats = async (userToken) => {
 };
 
 exports.fetchUserData = async (userId) => {
-  const userData = await userDataSchema
-    .findOne({ userId: userId })
-    .exec();
+  const userData = await userDataSchema.findOne({ userId: userId }).exec();
   return userData;
 };
 
 exports.fetchSummaryReport = async (userToken) => {
   const reqHeaders = getRequestHeaders(userToken);
-  const requestAuth = await request(
-    "https://api.wanikani.com/v2/summary",
-    {
-      headers: reqHeaders
-    }
-  );
+  const requestAuth = await request("https://api.wanikani.com/v2/summary", {
+    headers: reqHeaders,
+  });
   const results = await requestAuth.body.json();
   return results.data;
-}
+};
 
 const formatLongDate = (dateString) => {
   const date = new Date(dateString);
@@ -133,16 +120,20 @@ const formatLongDate = (dateString) => {
 
   let hours = date.getHours();
   let minutes = date.getMinutes();
-  let ampm = hours >= 12 ? 'PM' : 'AM';
+  let ampm = hours >= 12 ? "PM" : "AM";
 
   hours = hours % 12;
   hours = hours ? hours : 12;
 
-  let formattedDate = `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
-  let formattedTime = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
- 
+  let formattedDate = `${month.toString().padStart(2, "0")}/${day
+    .toString()
+    .padStart(2, "0")}/${year}`;
+  let formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")} ${ampm}`;
+
   return `${formattedDate} ${formattedTime}`;
-}
+};
 
 const formatCountdown = (dateString) => {
   let now = new Date();
@@ -150,11 +141,14 @@ const formatCountdown = (dateString) => {
   let difference = targetDate - now;
 
   let days = Math.floor(difference / (1000 * 60 * 60 * 24));
-  let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  let hours = Math.floor(
+    (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
   let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-  return `Time until next review: ${Math.abs(days)}d ${Math.abs(hours)}hr ${Math.abs(minutes)}m`;
-
-}
+  return `Time until next review: ${Math.abs(days)}d ${Math.abs(
+    hours
+  )}hr ${Math.abs(minutes)}m`;
+};
 
 exports.getCountdownToNextUpdate = (date) => {
   const targetDate = new Date(dateString);
@@ -162,18 +156,16 @@ exports.getCountdownToNextUpdate = (date) => {
 
   const difference = targetDate - now;
   return difference;
-}
+};
 
 exports.convertDate = (option, dateString) => {
   if (option == "long") {
     return formatLongDate(dateString);
-    
   }
 
   if (option == "countdown") {
     return formatCountdown(dateString);
   }
-
-}
+};
 
 exports.isPastMinimumUpdateTime = async (lastUpdatedTime) => {};
