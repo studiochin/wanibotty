@@ -67,13 +67,13 @@ exports.fetchAssignments = async (userToken) => {
 
   results.data.forEach((assignment) => {
     let data = assignment.data;
-    if (data.srs_stage > 0 && data.srs_stage <= 4) {
+    if (data.srs_stage >= 0 && data.srs_stage <= 4) {
       resultsToReturn.apprenticeCount++;
     }
-    if (data.srs_stage > 4 && data.srs_stage <= 6) {
+    if (data.srs_stage >= 5 && data.srs_stage <= 6) {
       resultsToReturn.guruCount++;
     }
-    if (data.srs_stage >= 7) {
+    if (data.srs_stage >= 7 && data.srs_stage < 8) {
       resultsToReturn.masterCount++;
     }
 
