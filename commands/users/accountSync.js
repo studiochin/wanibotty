@@ -46,7 +46,6 @@ module.exports = {
     await fetchSummaryReport(token).then((res) => {
       const stuff = res.body.json();
       stuff.then((data) => {
-        console.log(data);
         userData.nextReviewsAt = data.next_reviews_at;
       });
     });
