@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const {
   fetchUserData,
   botErrorReplies,
-  convertDate
+  convertDate,
 } = require("../../src/utils.js");
 
 // const statsOutput = (data) => {
@@ -14,7 +14,7 @@ const statsOutputFromDb = (userData) => {
   
   level: ${userData.level}
   ${convertDate("countdown", userData.nextReviewsAt)}
-  total kanji studying: ${userData.totalAssignments}
+  total cards studying: ${userData.totalAssignments}
   apprentice: ${userData.apprenticeCount}
   guru: ${userData.guruCount}
   mastered: ${userData.masterCount}
@@ -33,6 +33,7 @@ module.exports = {
       await interaction.reply(botErrorReplies("userNotFound"));
       return;
     }
+
     await interaction.reply(statsOutputFromDb(userData));
   },
 };

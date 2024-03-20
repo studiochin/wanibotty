@@ -19,7 +19,6 @@ exports.encrypt = (text) => {
 };
 
 exports.decrypt = (encryptedObj) => {
-  console.log(encryptedObj);
   const decipher = crypto.createDecipheriv(
     "aes-256-cbc",
     Buffer.from(ENCRYPTION_KEY, "hex"),
@@ -53,36 +52,7 @@ exports.fetchAssignments = async (userToken) => {
     headers: reqHeaders,
   });
   const results = await requestAuth.body.json();
-
-  let resultsToReturn = {
-    totalAssignments: 0,
-    apprenticeCount: 0,
-    guruCount: 0,
-    masterCount: 0,
-    englightenedCount: 0,
-    brunedCount: 0,
-  };
-
-  resultsToReturn.totalAssignments = results.total_count;
-
-  results.data.forEach((assignment) => {
-    let data = assignment.data;
-    if (data.srs_stage >= 0 && data.srs_stage <= 4) {
-      resultsToReturn.apprenticeCount++;
-    }
-    if (data.srs_stage >= 5 && data.srs_stage <= 6) {
-      resultsToReturn.guruCount++;
-    }
-    if (data.srs_stage >= 7 && data.srs_stage < 8) {
-      resultsToReturn.masterCount++;
-    }
-
-    if (data.srs_stage >= 8) {
-      resultsToReturn.englightenedCount++;
-    }
-  });
-  console.log(resultsToReturn);
-  return resultsToReturn;
+  return results;
 };
 
 exports.fetchReviewStats = async (userToken) => {
