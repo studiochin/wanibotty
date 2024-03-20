@@ -51,8 +51,7 @@ exports.fetchAssignments = async (userToken) => {
   const requestAuth = await request("https://api.wanikani.com/v2/assignments", {
     headers: reqHeaders,
   });
-  const results = await requestAuth.body.json();
-  return results;
+  return requestAuth;
 };
 
 exports.fetchReviewStats = async (userToken) => {
@@ -63,6 +62,7 @@ exports.fetchReviewStats = async (userToken) => {
       headers: reqHeaders,
     }
   );
+  return requestAuth;
   const results = await requestAuth.body.json();
   return results.data[results.data.length - 1];
 };
@@ -77,8 +77,7 @@ exports.fetchSummaryReport = async (userToken) => {
   const requestAuth = await request("https://api.wanikani.com/v2/summary", {
     headers: reqHeaders,
   });
-  const results = await requestAuth.body.json();
-  return results.data;
+  return requestAuth;
 };
 
 const formatLongDate = (dateString) => {

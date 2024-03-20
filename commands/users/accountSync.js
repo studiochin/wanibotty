@@ -32,11 +32,24 @@ module.exports = {
       iv: userData.iv,
     });
 
-    const statsResult = await fetchReviewStats(token);
-    const reports = await fetchSummaryReport(token);
-    const assignments = await fetchAssignments(token);
+    await fetchReviewStats(token).then((res) => {
+      const results = res.body.json();
+      const data = results.data[results.data.length - 1];
 
-    assignments.then((res) => {
+      userData.level = data.level;
+      userData.startedLevelAt = data.started_at;
+      userData.unlockedLevelAt = data.unlocked_at;
+      userData.passedLevelAt = data.passed_at;
+    });
+
+    await fetchSummaryReport(token).then((res) => {
+      const stuff = res.body.json();
+      userData.nextReviewsAt = stuff.next_reviews_at;
+    });
+
+    await fetchAssignments(token).then((res) => {
+      const results = res.body.json();
+
       let resultsToReturn = {
         totalAssignments: 0,
         apprenticeCount: 0,
@@ -71,17 +84,6 @@ module.exports = {
       userData.masterCount = resultsToReturn.masterCount;
       userData.englightenedCount = resultsToReturn.englightenedCount;
       userData.burnedCount = resultsToReturn.burnedCount;
-    });
-
-    statsResult.then((res) => {
-      userData.level = res.data.level;
-      userData.startedLevelAt = res.data.started_at;
-      userData.unlockedLevelAt = res.data.unlocked_at;
-      userData.passedLevelAt = res.data.passed_at;
-    });
-
-    reports.then((res) => {
-      userData.nextReviewsAt = res.next_reviews_at;
     });
 
     await userData.save();
