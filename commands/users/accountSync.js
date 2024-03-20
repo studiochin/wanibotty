@@ -32,7 +32,7 @@ module.exports = {
       iv: userData.iv,
     });
 
-    await fetchReviewStats(token).then((res) => {
+    const reviewStats = await fetchReviewStats(token).then((res) => {
       const results = res.body.json();
       results.then((data) => {
         const resp = data;
@@ -43,14 +43,14 @@ module.exports = {
       });
     });
 
-    await fetchSummaryReport(token).then((res) => {
+    const summary = await fetchSummaryReport(token).then((res) => {
       const stuff = res.body.json();
       stuff.then((data) => {
         userData.nextReviewsAt = data.next_reviews_at;
       });
     });
 
-    await fetchAssignments(token).then((res) => {
+    const assignments = await fetchAssignments(token).then((res) => {
       const results = res.body.json();
       let resultsToReturn = {
         totalAssignments: 0,
@@ -90,7 +90,9 @@ module.exports = {
       userData.burnedCount = resultsToReturn.burnedCount;
     });
 
-    await userData.save();
-    await interaction.reply(`sync complete`);
+    Promise.all([summary, reviewStats, assignments]).then(() => {
+      userData.save();
+      interaction.reply(`sync complete`);
+    });
   },
 };
