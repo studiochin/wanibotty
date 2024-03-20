@@ -63,8 +63,6 @@ exports.fetchReviewStats = async (userToken) => {
     }
   );
   return requestAuth;
-  const results = await requestAuth.body.json();
-  return results.data[results.data.length - 1];
 };
 
 exports.fetchUserData = async (userId) => {

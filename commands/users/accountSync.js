@@ -34,22 +34,25 @@ module.exports = {
 
     await fetchReviewStats(token).then((res) => {
       const results = res.body.json();
-      const data = results.data[results.data.length - 1];
-
-      userData.level = data.level;
-      userData.startedLevelAt = data.started_at;
-      userData.unlockedLevelAt = data.unlocked_at;
-      userData.passedLevelAt = data.passed_at;
+      results.then((data) => {
+        const resp = data;
+        // userData.level = resp.level;
+        // userData.startedLevelAt = resp.started_at;
+        // userData.unlockedLevelAt = resp.unlocked_at;
+        // userData.passedLevelAt = resp.passed_at;
+      });
     });
 
     await fetchSummaryReport(token).then((res) => {
       const stuff = res.body.json();
-      userData.nextReviewsAt = stuff.next_reviews_at;
+      stuff.then((data) => {
+        console.log(data);
+        userData.nextReviewsAt = data.next_reviews_at;
+      });
     });
 
     await fetchAssignments(token).then((res) => {
       const results = res.body.json();
-
       let resultsToReturn = {
         totalAssignments: 0,
         apprenticeCount: 0,
@@ -59,23 +62,25 @@ module.exports = {
         brunedCount: 0,
       };
 
-      resultsToReturn.totalAssignments = results.total_count;
+      results.then((data) => {
+        resultsToReturn.totalAssignments = data.data.total_count;
 
-      res.forEach((assignment) => {
-        let assignmentData = assignment.data;
-        if (assignmentData.srs_stage >= 0 && assignmentData.srs_stage <= 4) {
-          resultsToReturn.apprenticeCount++;
-        }
-        if (assignmentData.srs_stage >= 5 && assignmentData.srs_stage <= 6) {
-          resultsToReturn.guruCount++;
-        }
-        if (assignmentData.srs_stage >= 7 && assignmentData.srs_stage < 8) {
-          resultsToReturn.masterCount++;
-        }
+        data.data.forEach((assignment) => {
+          let assignmentData = assignment.data;
+          if (assignmentData.srs_stage >= 0 && assignmentData.srs_stage <= 4) {
+            resultsToReturn.apprenticeCount++;
+          }
+          if (assignmentData.srs_stage >= 5 && assignmentData.srs_stage <= 6) {
+            resultsToReturn.guruCount++;
+          }
+          if (assignmentData.srs_stage >= 7 && assignmentData.srs_stage < 8) {
+            resultsToReturn.masterCount++;
+          }
 
-        if (assignmentData.srs_stage >= 8) {
-          resultsToReturn.englightenedCount++;
-        }
+          if (assignmentData.srs_stage >= 8) {
+            resultsToReturn.englightenedCount++;
+          }
+        });
       });
 
       userData.totalAssignments = resultsToReturn.totalAssignments;
